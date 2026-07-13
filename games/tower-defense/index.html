@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tower Defense</title>
+  <link rel="stylesheet" href="game.css" />
+</head>
+<body>
+  <div class="topbar">
+    <a class="back" href="../../index.html">&larr; Accueil</a>
+    <h1>Tower Defense</h1>
+    <div class="stats">
+      <span class="stat" title="Or">💰 <b id="gold">0</b></span>
+      <span class="stat" title="Vies">❤️ <b id="lives">0</b></span>
+      <span class="stat" title="Vague">🌊 <b id="wave">0</b></span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="board-wrap">
+      <canvas id="game" width="800" height="600"></canvas>
+      <div id="overlay" class="overlay hidden">
+        <div class="overlay-box">
+          <h2 id="overlay-title">Titre</h2>
+          <p id="overlay-text">Texte</p>
+          <button id="overlay-btn">Rejouer</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="panel">
+      <section class="panel-block">
+        <h3>Construire</h3>
+        <div class="build-buttons">
+          <button class="build-btn" data-type="arrow">
+            <span class="ic">🏹</span>
+            <span class="nm">Archers</span>
+            <span class="pr">50 💰</span>
+          </button>
+          <button class="build-btn" data-type="cannon">
+            <span class="ic">💣</span>
+            <span class="nm">Canon</span>
+            <span class="pr">100 💰</span>
+          </button>
+          <button class="build-btn" data-type="frost">
+            <span class="ic">❄️</span>
+            <span class="nm">Givre</span>
+            <span class="pr">75 💰</span>
+          </button>
+        </div>
+        <p class="hint" id="build-hint">Choisis une tour puis clique sur une case libre. Échap pour annuler.</p>
+      </section>
+
+      <section class="panel-block">
+        <h3>Héros</h3>
+        <div class="hero-card">
+          <div class="hero-head">
+            <span class="hero-emoji">🦸</span>
+            <div>
+              <div class="hero-name">Niveau <b id="hero-level">1</b></div>
+              <div class="hero-xpbar"><span id="hero-xpfill"></span></div>
+            </div>
+          </div>
+          <ul class="hero-stats">
+            <li>Dégâts <b id="hero-dmg">0</b></li>
+            <li>Portée <b id="hero-range">0</b></li>
+            <li>PV <b id="hero-hp">0</b></li>
+          </ul>
+          <p class="hint">Clique sur le terrain pour déplacer le héros. Il attaque tout seul et gagne de l'XP en tuant des ennemis.</p>
+        </div>
+      </section>
+
+      <section class="panel-block">
+        <button id="start-wave" class="primary">Lancer la vague</button>
+        <button id="reset" class="ghost">Recommencer</button>
+      </section>
+    </aside>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

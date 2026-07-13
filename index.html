@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arcade — Mes Jeux</title>
+  <link rel="stylesheet" href="assets/home.css" />
+</head>
+<body>
+  <header class="hero">
+    <h1>🎮 Arcade</h1>
+    <p>Une collection de petits jeux à jouer directement dans le navigateur.</p>
+  </header>
+
+  <main class="games">
+    <a class="game-card available" href="games/tower-defense/index.html">
+      <div class="thumb td-thumb" aria-hidden="true">
+        <span class="tower">🗼</span>
+        <span class="path"></span>
+        <span class="enemy">👾</span>
+      </div>
+      <div class="card-body">
+        <h2>Tower Defense</h2>
+        <p>Construis des tours, fais monter ton héros en niveau et défends ta base contre les vagues d'ennemis.</p>
+        <span class="badge play">Jouer &rarr;</span>
+      </div>
+    </a>
+
+    <div class="game-card soon" aria-disabled="true">
+      <div class="thumb soon-thumb" aria-hidden="true">
+        <span>➕</span>
+      </div>
+      <div class="card-body">
+        <h2>Bientôt…</h2>
+        <p>D'autres jeux arriveront ici prochainement.</p>
+        <span class="badge">À venir</span>
+      </div>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <p>Fait avec ❤️ — HTML, CSS et JavaScript, sans dépendances.</p>
+  </footer>
+</body>
+</html>
