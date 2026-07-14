@@ -13,11 +13,18 @@ describe("grantXp", () => {
     expect(h.maxHp).toBe(120);
     expect(h.damage).toBe(19);
     expect(h.range).toBe(96);
+    expect(h.weaponPoints).toBe(1);
   });
 
   it("gère plusieurs montées de niveau d'un coup", () => {
     const state = createState();
     grantXp(state, 25); // 10 (niv.2) puis 15 (niv.3)
     expect(state.hero.level).toBe(3);
+  });
+
+  it("octroie un point d'arme par niveau gagné", () => {
+    const state = createState();
+    grantXp(state, 25); // deux niveaux
+    expect(state.hero.weaponPoints).toBe(2);
   });
 });

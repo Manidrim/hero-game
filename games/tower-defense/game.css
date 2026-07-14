@@ -349,6 +349,21 @@ canvas {
   box-shadow: inset 0 0 0 1px rgba(255, 212, 59, 0.15);
 }
 
+/* Point de niveau du héros : donne un niveau à l'arme équipée */
+.wd-levelup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.wd-hero-points { font-size: 0.8rem; color: var(--muted); margin-right: auto; }
+.wd-hero-points b { color: var(--text); }
+.wd-btn-levelup:hover:not(:disabled) {
+  border-color: #63e6be;
+  background: rgba(99, 230, 190, 0.18);
+}
+
 /* Voile de rechargement : se vide du haut vers le bas. */
 .weapon-btn .wp-cd {
   position: absolute;

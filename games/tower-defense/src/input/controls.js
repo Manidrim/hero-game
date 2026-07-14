@@ -2,6 +2,7 @@ import { selectType } from "../domain/towers-build.js";
 import { switchWeapon } from "../domain/weapon-switch.js";
 import { buyWeapon } from "../domain/weapon-shop.js";
 import { allocateWeaponPoint } from "../domain/weapon-upgrade.js";
+import { grantWeaponLevel } from "../domain/weapon-level-grant.js";
 import { upgradeTower } from "../domain/towers-upgrade.js";
 import { startWave } from "../domain/waves.js";
 
@@ -18,6 +19,9 @@ export function bindControls(el, state, onReset) {
   );
   el.allocSpeed.addEventListener("click", () =>
     allocateWeaponPoint(state, state.hero.weapon, "speed")
+  );
+  el.grantLevel.addEventListener("click", () =>
+    grantWeaponLevel(state, state.hero.weapon)
   );
   el.nearbyTowers.addEventListener("click", (evt) => {
     const btn = evt.target.closest(".tr-up");
