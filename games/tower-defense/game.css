@@ -267,17 +267,40 @@ canvas {
 .wd-points b { color: var(--text); }
 .weapon-detail.has-points .wd-points b { color: #ffd43b; }
 .wd-btn {
-  padding: 6px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  background: var(--panel);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: var(--panel-2);
   color: var(--text);
   font-size: 0.72rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.12s ease, transform 0.12s ease, opacity 0.12s ease;
+  transition: border-color 0.12s ease, background 0.12s ease,
+    box-shadow 0.12s ease, transform 0.12s ease, opacity 0.12s ease;
 }
-.wd-btn:hover:not(:disabled) { border-color: var(--accent-2); transform: translateY(-1px); }
+.wd-btn .wd-btn-ic { font-size: 0.9rem; line-height: 1; }
+.wd-btn:hover:not(:disabled) { transform: translateY(-1px); }
+.wd-btn:active:not(:disabled) { transform: translateY(0); }
 .wd-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Accent coloré selon le type d'amélioration */
+.wd-btn[data-alloc="multiplier"]:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: rgba(108, 92, 231, 0.22);
+}
+.wd-btn[data-alloc="speed"]:hover:not(:disabled) {
+  border-color: var(--accent-2);
+  background: rgba(0, 210, 211, 0.18);
+}
+
+/* Points disponibles : les boutons appellent au clic */
+.weapon-detail.has-points .wd-btn:not(:disabled) {
+  border-color: rgba(255, 212, 59, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(255, 212, 59, 0.15);
+}
 
 /* Voile de rechargement : se vide du haut vers le bas. */
 .weapon-btn .wp-cd {
