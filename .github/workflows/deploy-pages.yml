@@ -29,6 +29,10 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          # Active automatiquement GitHub Pages (mode Actions) si ce n'est pas
+          # déjà fait, pour éviter l'erreur "Get Pages site failed / Not Found".
+          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
