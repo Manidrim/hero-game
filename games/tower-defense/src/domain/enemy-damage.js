@@ -1,14 +1,17 @@
 import { SLOW_DURATION } from "../config/balance.js";
 import { addFloater } from "./floaters.js";
 import { grantXp } from "./leveling.js";
+import { grantWeaponXp } from "./weapon-leveling.js";
 
-// Retire un ennemi vaincu : crédite l'or, l'XP et affiche un texte flottant.
+// Retire un ennemi vaincu : crédite l'or, l'XP (héros et arme) et affiche un
+// texte flottant.
 export function killEnemy(state, index) {
   const e = state.enemies[index];
   state.enemies.splice(index, 1);
   state.gold += e.reward;
   addFloater(state, e.x, e.y, "+" + e.reward + "💰", "#ffd43b");
   grantXp(state, e.reward);
+  grantWeaponXp(state, e.reward);
 }
 
 // Applique des dégâts à un ennemi ; le ralentit et le tue si nécessaire.

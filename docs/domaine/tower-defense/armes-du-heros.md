@@ -4,101 +4,126 @@
 
 ## Rôle
 
-Gère les différentes armes du héros : leur définition, le calcul des
-statistiques d'attaque effectives, le déblocage par niveau et le changement
-d'arme avec cooldown. Le héros tire automatiquement avec l'arme équipée ; l'arme
-ne fait que **moduler** ses statistiques de base.
+Gère les armes du héros : leur définition, leur **achat** avec de l'or, leur
+**progression** propre (niveaux, points répartis), le calcul des statistiques
+d'attaque effectives et le changement d'arme avec cooldown. Le héros tire
+automatiquement avec l'arme équipée ; l'arme **module** ses statistiques de base.
 
 ## Définition des armes
 
-Les armes sont décrites dans la table `WEAPONS` (`src/config/weapons.js`). Chaque arme applique
-des **multiplicateurs** sur les statistiques de base du héros plutôt que des
-valeurs absolues, afin de continuer à bénéficier de la montée en niveau :
+Les armes sont décrites dans la table `WEAPONS` (`src/config/weapons.js`). Chaque
+arme porte ses **caractéristiques fixes** ; sa puissance évolue ensuite via ses
+points de progression, pas via la table :
 
 ```
 WEAPONS = {
-  smg     : { unlockLevel: 1,  damageMul: 1,   rangeMul: 1, fireRateMul: 0.8, splash: 0,  … },
-  bazooka : { unlockLevel: 5,  damageMul: 2.4, rangeMul: 1, fireRateMul: 3,   splash: 60, … },
-  sniper  : { unlockLevel: 10, damageMul: 4,   rangeMul: 2, fireRateMul: 3.5, splash: 0,  … },
+  smg     : { cost: 0,    rangeMul: 1, baseFireRate: 0.7, splash: 0,  … },
+  bazooka : { cost: 1000, rangeMul: 1, baseFireRate: 1.8, splash: 60, … },
+  sniper  : { cost: 5000, rangeMul: 2, baseFireRate: 2.2, splash: 0,  … },
 }
 ```
 
-- `damageMul` / `rangeMul` : facteurs multiplicatifs sur `hero.damage` /
-  `hero.range`.
-- `fireRateMul` : facteur sur le **délai** entre deux tirs (`hero.fireRate`).
-  Une valeur `> 1` rend l'arme **plus lente** ; `0.8` rend la mitraillette plus
-  rapide que la cadence de base.
+- `cost` : prix d'achat en or (`0` = offerte au départ).
+- `rangeMul` : facteur multiplicatif sur `hero.range`.
+- `baseFireRate` : **délai** entre deux tirs au niveau 1 (les armes sont lentes
+  au départ) ; réduit par les points de vitesse.
 - `splash` : rayon des dégâts de zone (0 = cible unique).
 - `bullet` / `bulletSpeed` : couleur et vitesse du projectile.
+- Constantes de progression : `WEAPON_XP_BASE`, `WEAPON_XP_GROWTH`,
+  `MULTIPLIER_STEP` (0.1), `FIRE_RATE_STEP` (0.9), `MIN_FIRE_RATE`.
 - `WEAPON_ORDER` fixe l'ordre d'affichage et de défilement (`smg → bazooka →
   sniper`).
 
-### Statistiques effectives
+## État de progression par arme
 
-`weaponStats(hero)` (`src/domain/weapon-stats.js`) combine l'arme équipée
-(`hero.weapon`) et les stats de base du héros pour renvoyer
-`{ damage, range, fireRate, splash, bullet, bulletSpeed }`. Cette fonction est
-la **source unique** utilisée par :
+`createWeapons()` (`src/domain/weapon-state.js`) crée, pour **chaque** arme, un
+état stocké dans `hero.weapons[clé]` :
 
-- `updateHeroCombat()` (`src/domain/hero-combat.js`) — pour choisir la cible
-  (portée), tirer et fixer le cooldown de tir ;
-- `syncHud()` (`src/ui/hud.js`) — pour afficher Dégâts / Portée ;
-- `drawHero()` (`src/render/hero.js`) — pour dessiner le cercle de portée et la
-  pastille d'arme.
+```
+{ owned, level, xp, xpNext, points, multiplierPoints, speedPoints }
+```
 
-## Déblocage par niveau
+`owned` vaut `true` d'emblée pour les armes gratuites (`cost === 0`).
 
-Dans `grantXp()` (`src/domain/leveling.js`), à chaque passage de niveau, on
-parcourt `WEAPON_ORDER` et, si une arme a `unlockLevel === hero.level`, un texte
-flottant « Arme débloquée » apparaît. Aucune arme n'est équipée automatiquement :
-le joueur choisit quand basculer.
+## Statistiques effectives
+
+`weaponStats(hero)` (`src/domain/weapon-stats.js`) combine la définition de
+l'arme équipée (`hero.weapon`) et son état de progression
+(`hero.weapons[hero.weapon]`) :
+
+- `damage = hero.damage × multiplicateur`, où
+  `multiplicateur = 1 + 0.1 × multiplierPoints` (`weaponMultiplier`) ;
+- `fireRate = max(MIN_FIRE_RATE, baseFireRate × 0.9^speedPoints)`
+  (`weaponFireRate`) ;
+- `range = hero.range × rangeMul`, plus `splash`, `bullet`, `bulletSpeed`.
+
+Cette fonction est la **source unique** utilisée par `updateHeroCombat()`
+(tir/cible), `syncHud()` (HUD), `updateWeaponDetail()` (panneau d'arme) et
+`drawHero()` (cercle de portée, pastille).
+
+## Achat des armes
+
+`buyWeapon(state, key)` (`src/domain/weapon-shop.js`) : si l'arme n'est pas
+possédée et que `state.gold >= cost`, débite l'or, passe `owned` à `true` et
+renvoie `true`. Sinon affiche « Pas assez d'or » et renvoie `false`. **Le niveau
+du héros n'intervient plus** dans la disponibilité des armes.
+
+## Progression des armes
+
+`grantWeaponXp(state, amount)` (`src/domain/weapon-leveling.js`) est appelée
+depuis `killEnemy()` (`src/domain/enemy-damage.js`), en parallèle du `grantXp()`
+du héros : elle crédite l'XP à l'**arme équipée**, gère les montées de niveau et
+octroie **1 point** par niveau (`points++`).
+
+`allocateWeaponPoint(state, key, stat)` (`src/domain/weapon-upgrade.js`) dépense
+un point disponible dans `multiplier` (`multiplierPoints++`) ou `speed`
+(`speedPoints++`). Sans point disponible ou avec une stat inconnue, l'appel est
+sans effet.
 
 ## Changement d'arme et cooldown
 
-- `hero.weapon` : clé de l'arme équipée (`"smg"` par défaut dans `createState()`).
-- `hero.switchCd` : temps restant avant de pouvoir changer à nouveau, décrémenté
-  dans `updateHeroCombat()`.
-- `WEAPON_SWITCH_COOLDOWN` (≈ 3,5 s) : délai imposé après un changement.
+- `hero.weapon` : clé de l'arme équipée (`"smg"` par défaut).
+- `hero.switchCd` / `WEAPON_SWITCH_COOLDOWN` (≈ 3,5 s) : cooldown de changement.
 
-`switchWeapon(state, key)` (`src/domain/weapon-switch.js`) applique les
-garde-fous : arme existante et différente de l'actuelle, **niveau suffisant**
-(`hero.level >= unlockLevel`), **cooldown écoulé**. En cas de succès, elle met à
-jour `hero.weapon`, arme le cooldown de changement et impose un petit délai avant
-le prochain tir.
-
-`cycleWeapon(state)` (raccourci **X**) filtre les armes débloquées et passe à la
-suivante. Les boutons du panneau appellent directement `switchWeapon()`.
+`switchWeapon(state, key)` (`src/domain/weapon-switch.js`) n'équipe qu'une arme
+**possédée** (`owned`), différente de l'actuelle, cooldown écoulé.
+`cycleWeapon(state)` (raccourci **X**) filtre les armes possédées et passe à la
+suivante.
 
 ## Interface
 
-- HTML : boutons `.weapon-btn` (attribut `data-weapon`) dans le panneau
-  « Héros », chacun contenant un voile `.wp-cd`.
-- `updateWeaponUI()` (`src/ui/weapons.js`, appelée chaque frame) synchronise l'état visuel :
-  classe `active` (arme équipée), `locked` (niveau insuffisant), attribut
-  `disabled`, et met à l'échelle le voile `.wp-cd` (`scaleY`) proportionnellement
-  au cooldown restant. Les classes sont togglées à chaque frame (opération peu
-  coûteuse, dédupliquée par le navigateur).
+- HTML : boutons `.weapon-btn` (attribut `data-weapon`) et panneau
+  `#weapon-detail` (multiplicateur, cadence, points, boutons `+ Multiplicateur` /
+  `+ Vitesse`).
+- `updateWeaponUI()` (`src/ui/weapons.js`) synchronise les boutons : `active`
+  (équipée), `locked` (non possédée, affiche le prix), `affordable` (achat
+  possible), voile de rechargement `.wp-cd`.
+- `updateWeaponDetail()` (`src/ui/weapon-detail.js`) affiche multiplicateur,
+  cadence (tirs/s) et points, et active/désactive les boutons de répartition.
+- Routage des clics dans `src/input/controls.js` : un clic sur une arme non
+  possédée l'**achète** (`buyWeapon`) puis l'équipe, sinon l'**équipe**
+  (`switchWeapon`) ; les boutons de répartition appellent `allocateWeaponPoint`.
 
 ## Fichiers concernés
 
-- `src/config/weapons.js` — `WEAPONS`, `WEAPON_ORDER`, `WEAPON_SWITCH_COOLDOWN`.
-- `src/domain/weapon-stats.js` — `weaponStats(hero)`.
-- `src/domain/weapon-switch.js` — `switchWeapon(state, key)`, `cycleWeapon(state)`.
-- `src/domain/hero-combat.js`, `src/domain/leveling.js` — intégrations (tir,
-  déblocage par niveau).
-- `src/ui/weapons.js` — `updateWeaponUI(el, state)`.
-- `src/ui/hud.js`, `src/render/hero.js`, `src/domain/bullets.js` — affichage HUD,
-  rendu et projectiles.
-- `games/tower-defense/index.html` — boutons `.weapon-btn` et aide utilisateur.
-- `games/tower-defense/game.css` — styles `.weapons`, `.weapon-btn`, `.wp-cd`.
+- `src/config/weapons.js` — table `WEAPONS` et constantes de progression.
+- `src/domain/weapon-state.js` — `createWeapon`, `createWeapons`.
+- `src/domain/weapon-stats.js` — `weaponStats`, `weaponMultiplier`, `weaponFireRate`.
+- `src/domain/weapon-shop.js` — `buyWeapon`.
+- `src/domain/weapon-leveling.js` — `grantWeaponXp`.
+- `src/domain/weapon-upgrade.js` — `allocateWeaponPoint`.
+- `src/domain/weapon-switch.js` — `switchWeapon`, `cycleWeapon`.
+- `src/ui/weapons.js`, `src/ui/weapon-detail.js` — synchro DOM.
+- `src/input/controls.js` — routage achat/équipement/répartition.
+- `index.html`, `game.css` — boutons, panneau d'arme et styles.
 
 (Chemins relatifs à `games/tower-defense/`.)
 
 ## Points d'attention
 
-- Les projectiles portent désormais une **vitesse propre** (`spawnBullet(…,
-  speed)`), avec une valeur par défaut de `420` conservée pour les tours.
-- Les statistiques d'attaque affichées et le cercle de portée dépendent de
-  l'arme : ils changent instantanément au changement d'arme.
+- Les points sont **propres à chaque arme** (`hero.weapons[clé]`) : ne pas les
+  globaliser sur le héros.
+- Une arme neuve démarre à **×1.0** et lente : elle n'est pas immédiatement
+  supérieure à la mitraillette, elle se construit par les points.
 - Le cooldown de changement (`switchCd`) est distinct du cooldown de tir
   (`cooldown`) : ne pas les confondre.

@@ -19,5 +19,13 @@ export function queryElements() {
     overlayBtn: document.getElementById("overlay-btn"),
     buildButtons: Array.from(document.querySelectorAll(".build-btn")),
     weaponButtons: Array.from(document.querySelectorAll(".weapon-btn")),
+    weaponDetail: document.getElementById("weapon-detail"),
+    wdName: document.getElementById("wd-name"),
+    wdLevel: document.getElementById("wd-level"),
+    wdMult: document.getElementById("wd-mult"),
+    wdRate: document.getElementById("wd-rate"),
+    wdPoints: document.getElementById("wd-points"),
+    allocMult: document.getElementById("alloc-mult"),
+    allocSpeed: document.getElementById("alloc-speed"),
   };
 }
