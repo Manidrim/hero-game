@@ -4,6 +4,7 @@ import { draw } from "./render/scene.js";
 import { queryElements } from "./ui/elements.js";
 import { syncHud } from "./ui/hud.js";
 import { updateWeaponUI } from "./ui/weapons.js";
+import { updateWeaponDetail } from "./ui/weapon-detail.js";
 import { refreshUpgradePanel } from "./ui/upgrade-panel.js";
 import { syncBuildButtons } from "./ui/build-buttons.js";
 import { syncOverlay } from "./ui/overlay.js";
@@ -27,6 +28,7 @@ function reset() {
 function syncUI() {
   syncHud(el, state);
   updateWeaponUI(el, state);
+  updateWeaponDetail(el, state);
   refreshUpgradePanel(el, state);
   syncBuildButtons(el, state);
   syncOverlay(el, state);

@@ -20,13 +20,4 @@ describe("grantXp", () => {
     grantXp(state, 25); // 10 (niv.2) puis 15 (niv.3)
     expect(state.hero.level).toBe(3);
   });
-
-  it("annonce le déblocage d'une arme au bon niveau", () => {
-    const state = createState();
-    state.hero.level = 4;
-    state.hero.xpNext = 10;
-    grantXp(state, 10); // passage au niveau 5 → bazooka
-    const unlock = state.floaters.find((f) => f.text.includes("Bazooka"));
-    expect(unlock).toBeTruthy();
-  });
 });

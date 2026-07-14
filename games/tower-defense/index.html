@@ -68,27 +68,44 @@
             <li>PV <b id="hero-hp">0</b></li>
           </ul>
           <div class="weapons" id="weapons">
-            <button class="weapon-btn" data-weapon="smg" title="Mitraillette — tir rapide">
+            <button class="weapon-btn" data-weapon="smg" title="Mitraillette">
               <span class="wp-cd"></span>
               <span class="wp-ic">🔫</span>
               <span class="wp-nm">Mitraillette</span>
-              <span class="wp-lvl">Niv. 1</span>
+              <span class="wp-lvl"></span>
             </button>
             <button class="weapon-btn" data-weapon="bazooka" title="Bazooka — dégâts de zone">
               <span class="wp-cd"></span>
               <span class="wp-ic">🚀</span>
               <span class="wp-nm">Bazooka</span>
-              <span class="wp-lvl">Niv. 5</span>
+              <span class="wp-lvl"></span>
             </button>
             <button class="weapon-btn" data-weapon="sniper" title="Sniper — longue portée">
               <span class="wp-cd"></span>
               <span class="wp-ic">🎯</span>
               <span class="wp-nm">Sniper</span>
-              <span class="wp-lvl">Niv. 10</span>
+              <span class="wp-lvl"></span>
             </button>
           </div>
+
+          <div class="weapon-detail" id="weapon-detail">
+            <div class="wd-head">
+              <span class="wd-name" id="wd-name">Mitraillette</span>
+              <span class="wd-level" id="wd-level">Niv. 1</span>
+            </div>
+            <ul class="wd-stats">
+              <li>Multiplicateur <b id="wd-mult">×1.0</b></li>
+              <li>Cadence <b id="wd-rate">0.0/s</b></li>
+            </ul>
+            <div class="wd-alloc">
+              <span class="wd-points">Points : <b id="wd-points">0</b></span>
+              <button class="wd-btn" id="alloc-mult" data-alloc="multiplier">+ Multiplicateur</button>
+              <button class="wd-btn" id="alloc-speed" data-alloc="speed">+ Vitesse</button>
+            </div>
+          </div>
+
           <p class="hint">Déplace le héros avec <b>ZQSD</b> (ou WASD / les flèches), ou clique sur le terrain. Il attaque tout seul et gagne de l'XP en tuant des ennemis.</p>
-          <p class="hint">Change d'arme en cliquant dessus ou avec la touche <b>X</b>. Le bazooka se débloque au niveau 5, le sniper au niveau 10. Un court délai s'écoule entre deux changements.</p>
+          <p class="hint">Achète le bazooka (1000 💰) et le sniper (5000 💰) en cliquant dessus. Change d'arme équipée avec la touche <b>X</b>. Chaque arme gagne ses propres niveaux au combat : dépense les points gagnés dans le multiplicateur de dégâts ou la vitesse d'attaque.</p>
         </div>
       </section>
 

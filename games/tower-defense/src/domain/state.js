@@ -1,5 +1,6 @@
 import { WIDTH, HEIGHT } from "../config/grid.js";
 import { STARTING_GOLD, STARTING_LIVES } from "../config/balance.js";
+import { createWeapons } from "./weapon-state.js";
 
 // Fabrique un état de jeu neuf (nouvelle partie).
 export function createState() {
@@ -37,10 +38,11 @@ function createHero() {
     speed: 140,
     level: 1, xp: 0, xpNext: 10,
     maxHp: 100, hp: 100,
-    damage: 14, range: 90, fireRate: 0.5,
+    damage: 14, range: 90,
     cooldown: 0,
     regen: 2, // PV par seconde
     weapon: "smg", // arme équipée
+    weapons: createWeapons(), // état de progression de chaque arme
     switchCd: 0, // temps restant avant de pouvoir changer d'arme
   };
 }

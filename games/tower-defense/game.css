@@ -209,11 +209,12 @@ canvas {
 }
 .weapon-btn.active .wp-lvl { color: var(--accent-2); }
 
-/* Arme verrouillée (niveau insuffisant) */
+/* Arme non possédée : affiche son prix (achat avec de l'or). */
 .weapon-btn.locked {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
 }
+.weapon-btn.locked .wp-lvl { color: var(--muted); }
 .weapon-btn.locked .wp-ic::after {
   content: "🔒";
   position: absolute;
@@ -221,8 +222,62 @@ canvas {
   margin-left: 2px;
 }
 
+/* Arme achetable (or suffisant) : mise en avant. */
+.weapon-btn.locked.affordable {
+  opacity: 1;
+  cursor: pointer;
+}
+.weapon-btn.locked.affordable .wp-lvl { color: #ffd43b; }
+.weapon-btn.locked.affordable .wp-ic::after { content: "🛒"; }
+
 /* Bouton non actif mais indisponible (recharge en cours) */
 .weapon-btn:disabled:not(.active):not(.locked) { cursor: wait; }
+
+/* Panneau de l'arme équipée : progression et répartition des points. */
+.weapon-detail {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--panel-2);
+}
+.wd-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-weight: 700;
+}
+.wd-head .wd-level { color: var(--accent-2); font-size: 0.8rem; }
+.wd-stats {
+  list-style: none;
+  display: flex;
+  gap: 16px;
+  margin: 8px 0;
+  padding: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.wd-stats b { color: var(--text); }
+.wd-alloc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.wd-points { font-size: 0.8rem; color: var(--muted); margin-right: auto; }
+.wd-points b { color: var(--text); }
+.weapon-detail.has-points .wd-points b { color: #ffd43b; }
+.wd-btn {
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: border-color 0.12s ease, transform 0.12s ease, opacity 0.12s ease;
+}
+.wd-btn:hover:not(:disabled) { border-color: var(--accent-2); transform: translateY(-1px); }
+.wd-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* Voile de rechargement : se vide du haut vers le bas. */
 .weapon-btn .wp-cd {
