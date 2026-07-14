@@ -9,6 +9,7 @@ export function createWeapon(key) {
     points: 0, // points disponibles à répartir
     multiplierPoints: 0, // points investis dans le multiplicateur
     speedPoints: 0, // points investis dans la vitesse d'attaque
+    kills: 0, // ennemis terminés avec cette arme
   };
 }
 

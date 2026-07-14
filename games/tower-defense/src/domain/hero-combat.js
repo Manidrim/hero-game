@@ -14,7 +14,8 @@ export function updateHeroCombat(state, dt) {
     const ws = weaponStats(h);
     const target = nearestEnemy(state.enemies, h.x, h.y, ws.range);
     if (target) {
-      spawnBullet(state, h.x, h.y, target.enemy, ws.damage, ws.bullet, ws.splash, 0, ws.bulletSpeed);
+      const source = { type: "hero", weapon: h.weapon };
+      spawnBullet(state, h.x, h.y, target.enemy, ws.damage, ws.bullet, ws.splash, 0, ws.bulletSpeed, source);
       h.cooldown = ws.fireRate;
     }
   }

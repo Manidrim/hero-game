@@ -1,9 +1,15 @@
+import { WEAPON_ORDER } from "../config/weapons.js";
+
 // Références vers les nœuds DOM du HUD et des panneaux latéraux.
 export function queryElements() {
   return {
     gold: document.getElementById("gold"),
     lives: document.getElementById("lives"),
     wave: document.getElementById("wave"),
+    heroKills: document.getElementById("hero-kills"),
+    killCounts: Object.fromEntries(
+      WEAPON_ORDER.map((key) => [key, document.getElementById("kills-" + key)]),
+    ),
     heroLevel: document.getElementById("hero-level"),
     heroXpFill: document.getElementById("hero-xpfill"),
     heroDmg: document.getElementById("hero-dmg"),

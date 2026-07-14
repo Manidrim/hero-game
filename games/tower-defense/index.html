@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tower Defense</title>
-  <link rel="stylesheet" href="game.css?v=3" />
+  <link rel="stylesheet" href="game.css?v=4" />
 </head>
 <body>
   <div class="topbar">
@@ -18,6 +18,21 @@
   </div>
 
   <div class="layout">
+    <aside class="panel panel-left">
+      <section class="panel-block">
+        <h3>Statistiques du héros</h3>
+        <div class="kill-total">
+          <span>🦸 Ennemis terminés</span>
+          <b id="hero-kills">0</b>
+        </div>
+        <ul class="kill-by-weapon">
+          <li><span>🔫 Mitraillette</span> <b id="kills-smg">0</b></li>
+          <li><span>🚀 Bazooka</span> <b id="kills-bazooka">0</b></li>
+          <li><span>🎯 Sniper</span> <b id="kills-sniper">0</b></li>
+        </ul>
+      </section>
+    </aside>
+
     <div class="board-wrap">
       <canvas id="game" width="800" height="600"></canvas>
       <div id="overlay" class="overlay hidden">
@@ -127,6 +142,6 @@
     </aside>
   </div>
 
-  <script type="module" src="src/main.js?v=4"></script>
+  <script type="module" src="src/main.js?v=5"></script>
 </body>
 </html>

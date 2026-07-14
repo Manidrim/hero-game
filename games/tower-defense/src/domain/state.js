@@ -44,5 +44,6 @@ function createHero() {
     weapon: "smg", // arme équipée
     weapons: createWeapons(), // état de progression de chaque arme
     switchCd: 0, // temps restant avant de pouvoir changer d'arme
+    kills: 0, // ennemis terminés par le héros (toutes armes confondues)
   };
 }
