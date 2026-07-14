@@ -15,9 +15,25 @@ thématiques), avec **aucun fichier de plus de 500 lignes** :
 
 ```
 docs/
-├── README.md          # ce fichier : vue d'ensemble
-├── domaine/           # documentation technique (sous-dossiers par thème)
-└── metier/            # documentation fonctionnelle (sous-dossiers par thème)
+├── README.md                              # ce fichier : vue d'ensemble
+├── domaine/                               # documentation technique
+│   └── tower-defense/
+│       └── deplacement-du-heros.md        # entrées clavier/souris, updateHero
+└── metier/                                # documentation fonctionnelle
+    └── tower-defense/
+        └── controles.md                   # contrôles du jeu (ZQSD/WASD/flèches, souris)
 ```
 
-_(aucune page pour le moment — l'arbre ci-dessus s'étoffe au fil des ajouts)_
+## Pages
+
+### Domaine (technique)
+
+- [`tower-defense/deplacement-du-heros.md`](domaine/tower-defense/deplacement-du-heros.md)
+  — déplacement du héros : gestion des entrées clavier (via `event.code`,
+  compatible AZERTY/QWERTY) et souris.
+
+### Métier (fonctionnel)
+
+- [`tower-defense/controles.md`](metier/tower-defense/controles.md)
+  — contrôles du jeu du point de vue du joueur : déplacement ZQSD/WASD/flèches/souris
+  et raccourcis clavier.

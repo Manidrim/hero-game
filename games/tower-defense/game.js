@@ -295,14 +295,28 @@
   function updateHero(dt) {
     const h = state.hero;
 
-    // Déplacement vers la cible
-    const dx = h.tx - h.x;
-    const dy = h.ty - h.y;
-    const dist = Math.hypot(dx, dy);
-    if (dist > 1) {
-      const step = Math.min(dist, h.speed * dt);
-      h.x += (dx / dist) * step;
-      h.y += (dy / dist) * step;
+    // Déplacement au clavier (ZQSD/AZERTY, WASD/QWERTY ou flèches).
+    // Prioritaire sur le déplacement à la souris tant qu'une touche est tenue.
+    const move = readMoveVector();
+    if (move.x !== 0 || move.y !== 0) {
+      const len = Math.hypot(move.x, move.y);
+      h.x += (move.x / len) * h.speed * dt;
+      h.y += (move.y / len) * h.speed * dt;
+      h.x = Math.max(0, Math.min(WIDTH, h.x));
+      h.y = Math.max(0, Math.min(HEIGHT, h.y));
+      // On synchronise la cible souris pour que le héros ne soit pas rappelé.
+      h.tx = h.x;
+      h.ty = h.y;
+    } else {
+      // Déplacement vers la cible (clic souris)
+      const dx = h.tx - h.x;
+      const dy = h.ty - h.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 1) {
+        const step = Math.min(dist, h.speed * dt);
+        h.x += (dx / dist) * step;
+        h.y += (dy / dist) * step;
+      }
     }
 
     // Régénération
@@ -763,6 +777,31 @@
   // ---------------------------------------------------------------------------
   // Entrées
   // ---------------------------------------------------------------------------
+
+  // Déplacement du héros au clavier.
+  // On se base sur `event.code`, c.-à-d. la POSITION PHYSIQUE de la touche,
+  // indépendamment de la disposition du clavier. Les positions KeyW/KeyA/KeyS/KeyD
+  // correspondent ainsi à ZQSD sur un AZERTY et à WASD sur un QWERTY : le même code
+  // fonctionne sur les deux dispositions sans avoir besoin de les détecter.
+  const MOVE_KEYS = {
+    KeyW: [0, -1], KeyS: [0, 1], KeyA: [-1, 0], KeyD: [1, 0],       // ZQSD / WASD
+    ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0],
+  };
+  const pressedKeys = new Set();
+
+  function readMoveVector() {
+    let x = 0, y = 0;
+    for (const code of pressedKeys) {
+      const v = MOVE_KEYS[code];
+      if (v) { x += v[0]; y += v[1]; }
+    }
+    return { x, y };
+  }
+
+  window.addEventListener("keyup", (e) => { pressedKeys.delete(e.code); });
+  // Si la fenêtre perd le focus, on relâche tout pour éviter un déplacement bloqué.
+  window.addEventListener("blur", () => { pressedKeys.clear(); });
+
   function canvasPos(evt) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -810,6 +849,8 @@
   el.overlayBtn.addEventListener("click", reset);
 
   window.addEventListener("keydown", (e) => {
+    // Déplacement du héros : on mémorise la touche tenue.
+    if (MOVE_KEYS[e.code]) { pressedKeys.add(e.code); e.preventDefault(); }
     if (e.key === "Escape") selectType(state.selectedType); // désélectionne
     if (e.key === " " || e.key === "Enter") { startWave(); e.preventDefault(); }
     if (e.key === "1") selectType("arrow");
