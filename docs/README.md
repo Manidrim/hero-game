@@ -22,7 +22,8 @@ docs/
 │   └── tower-defense/
 │       ├── architecture-modules.md        # découpage en modules ES (couches, flux de frame)
 │       ├── armes-du-heros.md              # système d'armes du héros (WEAPONS, switchWeapon)
-│       └── deplacement-du-heros.md        # entrées clavier/souris, moveHero
+│       ├── deplacement-du-heros.md        # entrées clavier/souris, moveHero
+│       └── statistiques-du-heros.md       # suivi des éliminations du héros (total et par arme)
 └── metier/                                # documentation fonctionnelle
     └── tower-defense/
         ├── armes-du-heros.md              # armes du héros (mitraillette/bazooka/sniper)
@@ -45,6 +46,9 @@ docs/
 - [`tower-defense/deplacement-du-heros.md`](domaine/tower-defense/deplacement-du-heros.md)
   — déplacement du héros : gestion des entrées clavier (via `event.code`,
   compatible AZERTY/QWERTY) et souris.
+- [`tower-defense/statistiques-du-heros.md`](domaine/tower-defense/statistiques-du-heros.md)
+  — suivi des éliminations du héros : attribution via la `source` du projectile,
+  compteurs total et par arme, affichage dans le panneau de gauche.
 
 ### Métier (fonctionnel)
 

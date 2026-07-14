@@ -2,9 +2,10 @@ import { distance } from "../math/geometry.js";
 import { DEFAULT_BULLET_SPEED } from "../config/balance.js";
 import { damageEnemy } from "./enemy-damage.js";
 
-// Crée un projectile ciblant un ennemi.
-export function spawnBullet(state, x, y, target, damage, color, splash, slow, speed = DEFAULT_BULLET_SPEED) {
-  state.bullets.push({ x, y, target, damage, color, splash, slow, speed });
+// Crée un projectile ciblant un ennemi. `source` identifie l'auteur du tir
+// (ex. { type: "hero", weapon }) pour attribuer les éliminations.
+export function spawnBullet(state, x, y, target, damage, color, splash, slow, speed = DEFAULT_BULLET_SPEED, source = null) {
+  state.bullets.push({ x, y, target, damage, color, splash, slow, speed, source });
 }
 
 // Fait avancer les projectiles et résout les impacts.
@@ -39,11 +40,11 @@ export function applyHit(state, b) {
     for (let i = state.enemies.length - 1; i >= 0; i--) {
       const e = state.enemies[i];
       if (distance(e.x, e.y, b.target.x, b.target.y) <= b.splash) {
-        damageEnemy(state, i, b.damage, b.slow);
+        damageEnemy(state, i, b.damage, b.slow, b.source);
       }
     }
   } else {
     const idx = state.enemies.indexOf(b.target);
-    if (idx !== -1) damageEnemy(state, idx, b.damage, b.slow);
+    if (idx !== -1) damageEnemy(state, idx, b.damage, b.slow, b.source);
   }
 }

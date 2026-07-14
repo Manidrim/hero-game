@@ -3,6 +3,7 @@ import { update } from "./domain/tick.js";
 import { draw } from "./render/scene.js";
 import { queryElements } from "./ui/elements.js";
 import { syncHud } from "./ui/hud.js";
+import { syncHeroKills } from "./ui/hero-kills.js";
 import { updateWeaponUI } from "./ui/weapons.js";
 import { updateWeaponDetail } from "./ui/weapon-detail.js";
 import { refreshUpgradePanel } from "./ui/upgrade-panel.js";
@@ -27,6 +28,7 @@ function reset() {
 // Synchronise toute la couche UI (DOM) avec l'état courant.
 function syncUI() {
   syncHud(el, state);
+  syncHeroKills(el, state);
   updateWeaponUI(el, state);
   updateWeaponDetail(el, state);
   refreshUpgradePanel(el, state);
