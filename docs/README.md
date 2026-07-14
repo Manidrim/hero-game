@@ -20,9 +20,11 @@ docs/
 │   ├── deploiement/
 │   │   └── github-pages.md                # déploiement du site sur GitHub Pages
 │   └── tower-defense/
+│       ├── armes-du-heros.md              # système d'armes du héros (WEAPONS, switchWeapon)
 │       └── deplacement-du-heros.md        # entrées clavier/souris, updateHero
 └── metier/                                # documentation fonctionnelle
     └── tower-defense/
+        ├── armes-du-heros.md              # armes du héros (mitraillette/bazooka/sniper)
         └── controles.md                   # contrôles du jeu (ZQSD/WASD/flèches, souris)
 ```
 
@@ -33,12 +35,18 @@ docs/
 - [`deploiement/github-pages.md`](domaine/deploiement/github-pages.md)
   — déploiement automatique du site sur GitHub Pages via GitHub Actions
   (URL de test publique reflétant `main`).
+- [`tower-defense/armes-du-heros.md`](domaine/tower-defense/armes-du-heros.md)
+  — système d'armes du héros : table `WEAPONS`, statistiques effectives,
+  déblocage par niveau et changement d'arme avec cooldown.
 - [`tower-defense/deplacement-du-heros.md`](domaine/tower-defense/deplacement-du-heros.md)
   — déplacement du héros : gestion des entrées clavier (via `event.code`,
   compatible AZERTY/QWERTY) et souris.
 
 ### Métier (fonctionnel)
 
+- [`tower-defense/armes-du-heros.md`](metier/tower-defense/armes-du-heros.md)
+  — armes du héros du point de vue du joueur : mitraillette (base), bazooka
+  (niveau 5), sniper (niveau 10) et changement d'arme.
 - [`tower-defense/controles.md`](metier/tower-defense/controles.md)
   — contrôles du jeu du point de vue du joueur : déplacement ZQSD/WASD/flèches/souris
   et raccourcis clavier.

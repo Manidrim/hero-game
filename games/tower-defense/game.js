@@ -60,6 +60,53 @@
   const MAX_TOWER_LEVEL = 10;
   const UPGRADE_RADIUS = 110;   // distance héros→tour pour pouvoir améliorer
 
+  // ---------------------------------------------------------------------------
+  // Armes du héros
+  // ---------------------------------------------------------------------------
+  // Le héros dispose de plusieurs armes qu'il débloque en montant de niveau.
+  // Chaque arme applique des multiplicateurs sur les statistiques de base du
+  // héros (dégâts / portée / cadence) et peut ajouter des dégâts de zone.
+  // `fireRateMul` agit sur le délai entre deux tirs : > 1 = plus lent.
+  const WEAPONS = {
+    smg: {
+      name: "Mitraillette", emoji: "🔫", unlockLevel: 1,
+      damageMul: 1, rangeMul: 1, fireRateMul: 0.8, splash: 0,
+      bullet: "#ffe066", bulletSpeed: 520,
+      desc: "Tir rapide, dégâts modérés.",
+    },
+    bazooka: {
+      name: "Bazooka", emoji: "🚀", unlockLevel: 5,
+      damageMul: 2.4, rangeMul: 1, fireRateMul: 3, splash: 60,
+      bullet: "#ffa94d", bulletSpeed: 340,
+      desc: "Dégâts de zone, cadence lente.",
+    },
+    sniper: {
+      name: "Sniper", emoji: "🎯", unlockLevel: 10,
+      damageMul: 4, rangeMul: 2, fireRateMul: 3.5, splash: 0,
+      bullet: "#74c0fc", bulletSpeed: 1000,
+      desc: "Dégâts et portée énormes, cadence très lente.",
+    },
+  };
+
+  // Ordre d'affichage / de défilement des armes.
+  const WEAPON_ORDER = ["smg", "bazooka", "sniper"];
+  // Délai (secondes) avant de pouvoir changer à nouveau d'arme.
+  const WEAPON_SWITCH_COOLDOWN = 3.5;
+
+  // Statistiques d'attaque effectives du héros selon l'arme équipée.
+  function weaponStats() {
+    const h = state.hero;
+    const w = WEAPONS[h.weapon];
+    return {
+      damage: h.damage * w.damageMul,
+      range: h.range * w.rangeMul,
+      fireRate: h.fireRate * w.fireRateMul,
+      splash: w.splash,
+      bullet: w.bullet,
+      bulletSpeed: w.bulletSpeed,
+    };
+  }
+
   // Statistiques effectives d'une tour selon son niveau (1 → 10).
   function getTowerStats(t) {
     const def = TOWER_TYPES[t.type];
@@ -118,6 +165,8 @@
         fireRate: 0.5,
         cooldown: 0,
         regen: 2,        // PV par seconde
+        weapon: "smg",   // arme équipée
+        switchCd: 0,     // temps restant avant de pouvoir changer d'arme
       },
     };
   }
@@ -144,6 +193,7 @@
     overlayText: document.getElementById("overlay-text"),
     overlayBtn: document.getElementById("overlay-btn"),
     buildButtons: Array.from(document.querySelectorAll(".build-btn")),
+    weaponButtons: Array.from(document.querySelectorAll(".weapon-btn")),
   };
 
   function syncHud() {
@@ -153,8 +203,9 @@
     const h = state.hero;
     el.heroLevel.textContent = h.level;
     el.heroXpFill.style.width = Math.min(100, (h.xp / h.xpNext) * 100) + "%";
-    el.heroDmg.textContent = Math.round(h.damage);
-    el.heroRange.textContent = Math.round(h.range);
+    const ws = weaponStats();
+    el.heroDmg.textContent = Math.round(ws.damage);
+    el.heroRange.textContent = Math.round(ws.range);
     el.heroHp.textContent = Math.round(h.hp) + "/" + h.maxHp;
     el.startWave.disabled = state.waveActive || state.gameOver;
   }
@@ -228,6 +279,7 @@
     updateBullets(dt);
     updateFloaters(dt);
     refreshUpgradePanel();
+    updateWeaponUI();
 
     // Fin de vague
     if (state.waveActive && state.spawnQueue.length === 0 && state.enemies.length === 0) {
@@ -322,13 +374,17 @@
     // Régénération
     if (h.hp < h.maxHp) h.hp = Math.min(h.maxHp, h.hp + h.regen * dt);
 
-    // Attaque automatique
+    // Cooldown de changement d'arme
+    if (h.switchCd > 0) h.switchCd = Math.max(0, h.switchCd - dt);
+
+    // Attaque automatique avec l'arme équipée
     h.cooldown -= dt;
     if (h.cooldown <= 0) {
-      const target = nearestEnemy(h.x, h.y, h.range);
+      const ws = weaponStats();
+      const target = nearestEnemy(h.x, h.y, ws.range);
       if (target) {
-        spawnBullet(h.x, h.y, target.enemy, h.damage, "#ffe066", 0, 0);
-        h.cooldown = h.fireRate;
+        spawnBullet(h.x, h.y, target.enemy, ws.damage, ws.bullet, ws.splash, 0, ws.bulletSpeed);
+        h.cooldown = ws.fireRate;
       }
     }
   }
@@ -346,6 +402,65 @@
       h.range += 6;
       h.fireRate = Math.max(0.18, h.fireRate * 0.95);
       addFloater(h.x, h.y - 20, "NIVEAU " + h.level + " !", "#63e6be");
+
+      // Déblocage d'une nouvelle arme à ce niveau.
+      for (const key of WEAPON_ORDER) {
+        const w = WEAPONS[key];
+        if (w.unlockLevel === h.level) {
+          addFloater(h.x, h.y - 40, "Arme débloquée : " + w.emoji + " " + w.name, "#ffe066");
+        }
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Changement d'arme
+  // ---------------------------------------------------------------------------
+  // Équipe l'arme demandée si elle est débloquée et si le cooldown le permet.
+  function switchWeapon(key) {
+    const h = state.hero;
+    const w = WEAPONS[key];
+    if (!w || key === h.weapon) return;
+    if (h.level < w.unlockLevel) {
+      addFloater(h.x, h.y - 20, "🔒 Niveau " + w.unlockLevel + " requis", "#ff6b6b");
+      return;
+    }
+    if (h.switchCd > 0) {
+      addFloater(h.x, h.y - 20, "Arme en rechargement…", "#ff6b6b");
+      return;
+    }
+    h.weapon = key;
+    h.switchCd = WEAPON_SWITCH_COOLDOWN;
+    h.cooldown = Math.max(h.cooldown, 0.2); // petit temps d'armement
+    addFloater(h.x, h.y - 20, w.emoji + " " + w.name, "#ffe066");
+    syncHud();
+  }
+
+  // Passe à l'arme débloquée suivante (raccourci clavier).
+  function cycleWeapon() {
+    const h = state.hero;
+    const unlocked = WEAPON_ORDER.filter((k) => h.level >= WEAPONS[k].unlockLevel);
+    if (unlocked.length <= 1) return;
+    const idx = unlocked.indexOf(h.weapon);
+    switchWeapon(unlocked[(idx + 1) % unlocked.length]);
+  }
+
+  // Met à jour l'état visuel des boutons d'arme (actif / verrouillé / cooldown).
+  function updateWeaponUI() {
+    const h = state.hero;
+    const cdRatio = h.switchCd / WEAPON_SWITCH_COOLDOWN;
+    for (const btn of el.weaponButtons) {
+      const key = btn.dataset.weapon;
+      const w = WEAPONS[key];
+      const locked = h.level < w.unlockLevel;
+      const active = key === h.weapon;
+      btn.classList.toggle("locked", locked);
+      btn.classList.toggle("active", active);
+      btn.disabled = locked || active || h.switchCd > 0;
+      const cd = btn.querySelector(".wp-cd");
+      // Voile de rechargement sur les armes disponibles non équipées.
+      cd.style.transform =
+        !active && !locked && h.switchCd > 0 ? "scaleY(" + cdRatio + ")" : "scaleY(0)";
     }
   }
 
@@ -381,9 +496,9 @@
   // ---------------------------------------------------------------------------
   // Projectiles
   // ---------------------------------------------------------------------------
-  function spawnBullet(x, y, target, damage, color, splash, slow) {
+  function spawnBullet(x, y, target, damage, color, splash, slow, speed = 420) {
     state.bullets.push({
-      x, y, target, damage, color, splash, slow, speed: 420, dead: false,
+      x, y, target, damage, color, splash, slow, speed, dead: false,
     });
   }
 
@@ -547,12 +662,13 @@
 
   function drawHero() {
     const h = state.hero;
+    const ws = weaponStats();
 
-    // Cercle de portée d'attaque (discret)
+    // Cercle de portée d'attaque (discret) — dépend de l'arme équipée.
     ctx.strokeStyle = "rgba(255, 224, 102, 0.18)";
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.arc(h.x, h.y, h.range, 0, Math.PI * 2);
+    ctx.arc(h.x, h.y, ws.range, 0, Math.PI * 2);
     ctx.stroke();
 
     // Zone d'amélioration des tours (les tours à l'intérieur sont améliorables)
@@ -573,6 +689,14 @@
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("🦸", h.x, h.y);
+
+    // Pastille de l'arme équipée
+    ctx.fillStyle = "#0f1226";
+    ctx.beginPath();
+    ctx.arc(h.x + 12, h.y + 11, 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = "12px serif";
+    ctx.fillText(WEAPONS[h.weapon].emoji, h.x + 12, h.y + 12);
 
     // Barre de vie du héros
     drawBar(h.x, h.y - 22, 30, h.hp / h.maxHp, "#63e6be");
@@ -838,6 +962,10 @@
     b.addEventListener("click", () => selectType(b.dataset.type))
   );
 
+  el.weaponButtons.forEach((b) =>
+    b.addEventListener("click", () => switchWeapon(b.dataset.weapon))
+  );
+
   el.nearbyTowers.addEventListener("click", (evt) => {
     const btn = evt.target.closest(".tr-up");
     if (!btn || btn.disabled || !btn.dataset.id) return;
@@ -856,6 +984,7 @@
     if (e.key === "1") selectType("arrow");
     if (e.key === "2") selectType("cannon");
     if (e.key === "3") selectType("frost");
+    if (e.key === "x" || e.key === "X") cycleWeapon(); // changer d'arme
   });
 
   // ---------------------------------------------------------------------------
@@ -868,6 +997,7 @@
     el.nearbyTowers.innerHTML = "";
     el.nearbyHint.style.display = "";
     syncHud();
+    updateWeaponUI();
   }
 
   let last = performance.now();

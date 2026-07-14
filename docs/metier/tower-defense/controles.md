@@ -39,6 +39,8 @@ l'emporte.
 - **Espace** ou **Entrée** : lancer la vague suivante.
 - **1** / **2** / **3** : sélectionner une tour à construire (Archers / Canon /
   Givre).
+- **X** : changer l'arme du héros (défile entre les armes débloquées). Voir
+  [Armes du héros](armes-du-heros.md).
 - **Échap** : annuler la sélection de tour en cours.
 
 ## Vocabulaire
