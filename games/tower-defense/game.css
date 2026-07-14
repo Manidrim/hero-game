@@ -175,6 +175,65 @@ canvas {
 }
 .hero-stats b { color: var(--text); display: block; text-align: center; }
 
+.weapons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.weapon-btn {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 4px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: var(--panel-2);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.12s ease, transform 0.12s ease, opacity 0.12s ease;
+}
+.weapon-btn:hover:not(:disabled) { transform: translateY(-2px); }
+.weapon-btn .wp-ic { font-size: 1.4rem; }
+.weapon-btn .wp-nm { font-size: 0.72rem; }
+.weapon-btn .wp-lvl { font-size: 0.68rem; color: var(--muted); }
+
+/* Arme équipée */
+.weapon-btn.active {
+  border-color: var(--accent-2);
+  cursor: default;
+}
+.weapon-btn.active .wp-lvl { color: var(--accent-2); }
+
+/* Arme verrouillée (niveau insuffisant) */
+.weapon-btn.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.weapon-btn.locked .wp-ic::after {
+  content: "🔒";
+  position: absolute;
+  font-size: 0.9rem;
+  margin-left: 2px;
+}
+
+/* Bouton non actif mais indisponible (recharge en cours) */
+.weapon-btn:disabled:not(.active):not(.locked) { cursor: wait; }
+
+/* Voile de rechargement : se vide du haut vers le bas. */
+.weapon-btn .wp-cd {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 8, 20, 0.6);
+  transform: scaleY(0);
+  transform-origin: top;
+  pointer-events: none;
+}
+
 .tower-row {
   display: flex;
   align-items: center;
