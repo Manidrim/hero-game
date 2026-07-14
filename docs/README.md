@@ -17,6 +17,8 @@ thématiques), avec **aucun fichier de plus de 500 lignes** :
 docs/
 ├── README.md                              # ce fichier : vue d'ensemble
 ├── domaine/                               # documentation technique
+│   ├── deploiement/
+│   │   └── github-pages.md                # déploiement du site sur GitHub Pages
 │   └── tower-defense/
 │       └── deplacement-du-heros.md        # entrées clavier/souris, updateHero
 └── metier/                                # documentation fonctionnelle
@@ -28,6 +30,9 @@ docs/
 
 ### Domaine (technique)
 
+- [`deploiement/github-pages.md`](domaine/deploiement/github-pages.md)
+  — déploiement automatique du site sur GitHub Pages via GitHub Actions
+  (URL de test publique reflétant `main`).
 - [`tower-defense/deplacement-du-heros.md`](domaine/tower-defense/deplacement-du-heros.md)
   — déplacement du héros : gestion des entrées clavier (via `event.code`,
   compatible AZERTY/QWERTY) et souris.
