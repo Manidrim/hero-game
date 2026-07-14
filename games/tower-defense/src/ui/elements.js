@@ -22,6 +22,7 @@ export function queryElements() {
     weaponDetail: document.getElementById("weapon-detail"),
     wdName: document.getElementById("wd-name"),
     wdLevel: document.getElementById("wd-level"),
+    wdXpFill: document.getElementById("wd-xpfill"),
     wdMult: document.getElementById("wd-mult"),
     wdRate: document.getElementById("wd-rate"),
     wdPoints: document.getElementById("wd-points"),

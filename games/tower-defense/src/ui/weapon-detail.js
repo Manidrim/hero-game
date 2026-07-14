@@ -10,6 +10,7 @@ export function updateWeaponDetail(el, state) {
   const ws = weaponStats(h);
   el.wdName.textContent = def.emoji + " " + def.name;
   el.wdLevel.textContent = "Niv. " + w.level;
+  el.wdXpFill.style.width = Math.min(100, (w.xp / w.xpNext) * 100) + "%";
   el.wdMult.textContent = "×" + weaponMultiplier(w).toFixed(1);
   el.wdRate.textContent = (1 / ws.fireRate).toFixed(1) + "/s";
   el.wdPoints.textContent = w.points;

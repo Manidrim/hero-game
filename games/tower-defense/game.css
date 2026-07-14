@@ -247,6 +247,20 @@ canvas {
   font-weight: 700;
 }
 .wd-head .wd-level { color: var(--accent-2); font-size: 0.8rem; }
+.wd-xpbar {
+  height: 6px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.wd-xpbar span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 0.2s ease;
+}
 .wd-stats {
   list-style: none;
   display: flex;

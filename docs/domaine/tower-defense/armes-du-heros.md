@@ -93,13 +93,14 @@ suivante.
 ## Interface
 
 - HTML : boutons `.weapon-btn` (attribut `data-weapon`) et panneau
-  `#weapon-detail` (multiplicateur, cadence, points, boutons `+ Multiplicateur` /
-  `+ Vitesse`).
+  `#weapon-detail` (barre d'XP `.wd-xpbar`, multiplicateur, cadence, points,
+  boutons `+ Multiplicateur` / `+ Vitesse`).
 - `updateWeaponUI()` (`src/ui/weapons.js`) synchronise les boutons : `active`
   (équipée), `locked` (non possédée, affiche le prix), `affordable` (achat
   possible), voile de rechargement `.wp-cd`.
-- `updateWeaponDetail()` (`src/ui/weapon-detail.js`) affiche multiplicateur,
-  cadence (tirs/s) et points, et active/désactive les boutons de répartition.
+- `updateWeaponDetail()` (`src/ui/weapon-detail.js`) affiche la progression vers
+  le niveau suivant (barre `#wd-xpfill`, ratio `xp / xpNext`), le multiplicateur,
+  la cadence (tirs/s) et les points, et active/désactive les boutons de répartition.
 - Routage des clics dans `src/input/controls.js` : un clic sur une arme non
   possédée l'**achète** (`buyWeapon`) puis l'équipe, sinon l'**équipe**
   (`switchWeapon`) ; les boutons de répartition appellent `allocateWeaponPoint`.
