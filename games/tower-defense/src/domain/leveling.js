@@ -18,5 +18,6 @@ function levelUp(state) {
   h.hp = h.maxHp;
   h.damage += 5;
   h.range += 6;
-  addFloater(state, h.x, h.y - 20, "NIVEAU " + h.level + " !", "#63e6be");
+  h.weaponPoints++; // un point à donner en niveau à une arme
+  addFloater(state, h.x, h.y - 20, "NIVEAU " + h.level + " · +1 point d'arme", "#63e6be");
 }

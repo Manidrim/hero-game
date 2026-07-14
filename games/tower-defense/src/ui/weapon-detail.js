@@ -14,7 +14,9 @@ export function updateWeaponDetail(el, state) {
   el.wdMult.textContent = "×" + weaponMultiplier(w).toFixed(1);
   el.wdRate.textContent = (1 / ws.fireRate).toFixed(1) + "/s";
   el.wdPoints.textContent = w.points;
-  el.weaponDetail.classList.toggle("has-points", w.points > 0);
+  el.weaponDetail.classList.toggle("has-points", w.points > 0 || h.weaponPoints > 0);
   el.allocMult.disabled = w.points <= 0;
   el.allocSpeed.disabled = w.points <= 0;
+  el.wdHeroPoints.textContent = h.weaponPoints;
+  el.grantLevel.disabled = h.weaponPoints <= 0;
 }

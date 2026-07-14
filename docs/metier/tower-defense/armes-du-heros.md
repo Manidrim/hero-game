@@ -42,6 +42,16 @@ L'**attaque totale** d'une arme est **les dégâts du héros × le multiplicateu
 l'arme**. Une arme récemment achetée démarre donc à ×1.0 : elle profite des
 dégâts du héros mais doit être améliorée pour dépasser la mitraillette.
 
+### Point de niveau gagné par le héros
+
+À chaque fois que le **héros monte de niveau**, il gagne aussi **1 point de
+niveau d'arme**. Ce point se dépense via le bouton **⬆️ Donner un niveau** du
+panneau de l'arme : il **fait monter l'arme équipée d'un niveau** (comme si elle
+avait accumulé assez d'XP), ce qui lui octroie à son tour **1 point à répartir**
+dans le multiplicateur ou la vitesse. Le joueur choisit **quelle arme** en fait
+profiter en l'équipant avant de dépenser le point. Les points de niveau du héros
+sont **partagés** (non liés à une arme) tant qu'ils ne sont pas dépensés.
+
 ## Changer d'arme
 
 Une fois une arme possédée, le joueur l'équipe :
@@ -71,6 +81,8 @@ Une fois une arme possédée, le joueur l'équipe :
   obtenir l'attaque totale de l'arme.
 - **Point d'arme** : ressource gagnée à chaque niveau d'arme, à investir dans le
   multiplicateur ou la vitesse d'attaque.
+- **Point de niveau d'arme** : ressource gagnée à chaque niveau du **héros**, à
+  dépenser pour donner directement un niveau à l'arme équipée.
 - **Dégâts de zone (splash)** : dégâts infligés à tous les ennemis proches du
   point d'impact — spécialité du bazooka.
 - **Rechargement (cooldown)** : court délai imposé entre deux changements

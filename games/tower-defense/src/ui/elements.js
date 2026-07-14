@@ -28,5 +28,7 @@ export function queryElements() {
     wdPoints: document.getElementById("wd-points"),
     allocMult: document.getElementById("alloc-mult"),
     allocSpeed: document.getElementById("alloc-speed"),
+    wdHeroPoints: document.getElementById("wd-hero-points"),
+    grantLevel: document.getElementById("grant-level"),
   };
 }

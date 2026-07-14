@@ -80,6 +80,16 @@ un point disponible dans `multiplier` (`multiplierPoints++`) ou `speed`
 (`speedPoints++`). Sans point disponible ou avec une stat inconnue, l'appel est
 sans effet.
 
+### Point de niveau gagné par le héros
+
+À chaque montée de niveau du héros, `levelUp()` (`src/domain/leveling.js`)
+incrémente `hero.weaponPoints` : une réserve **partagée** de points à donner en
+niveau à une arme. `grantWeaponLevel(state, key)`
+(`src/domain/weapon-level-grant.js`) dépense un de ces points pour **donner un
+niveau** à une arme possédée en réutilisant `weaponLevelUp(state, w)` (le niveau
+gagné octroie donc son `points++` habituel). L'appel est sans effet si
+`hero.weaponPoints <= 0` ou si l'arme n'est pas possédée ; il renvoie un booléen.
+
 ## Changement d'arme et cooldown
 
 - `hero.weapon` : clé de l'arme équipée (`"smg"` par défaut).
@@ -100,10 +110,13 @@ suivante.
   possible), voile de rechargement `.wp-cd`.
 - `updateWeaponDetail()` (`src/ui/weapon-detail.js`) affiche la progression vers
   le niveau suivant (barre `#wd-xpfill`, ratio `xp / xpNext`), le multiplicateur,
-  la cadence (tirs/s) et les points, et active/désactive les boutons de répartition.
+  la cadence (tirs/s), les points d'arme et les **points de niveau du héros**
+  (`#wd-hero-points`), et active/désactive les boutons de répartition ainsi que le
+  bouton **⬆️ Donner un niveau** (`#grant-level`).
 - Routage des clics dans `src/input/controls.js` : un clic sur une arme non
   possédée l'**achète** (`buyWeapon`) puis l'équipe, sinon l'**équipe**
-  (`switchWeapon`) ; les boutons de répartition appellent `allocateWeaponPoint`.
+  (`switchWeapon`) ; les boutons de répartition appellent `allocateWeaponPoint`,
+  et **⬆️ Donner un niveau** appelle `grantWeaponLevel` sur l'arme équipée.
 
 ## Fichiers concernés
 
@@ -111,8 +124,9 @@ suivante.
 - `src/domain/weapon-state.js` — `createWeapon`, `createWeapons`.
 - `src/domain/weapon-stats.js` — `weaponStats`, `weaponMultiplier`, `weaponFireRate`.
 - `src/domain/weapon-shop.js` — `buyWeapon`.
-- `src/domain/weapon-leveling.js` — `grantWeaponXp`.
+- `src/domain/weapon-leveling.js` — `grantWeaponXp`, `weaponLevelUp`.
 - `src/domain/weapon-upgrade.js` — `allocateWeaponPoint`.
+- `src/domain/weapon-level-grant.js` — `grantWeaponLevel` (point de niveau du héros).
 - `src/domain/weapon-switch.js` — `switchWeapon`, `cycleWeapon`.
 - `src/ui/weapons.js`, `src/ui/weapon-detail.js` — synchro DOM.
 - `src/input/controls.js` — routage achat/équipement/répartition.
@@ -122,8 +136,10 @@ suivante.
 
 ## Points d'attention
 
-- Les points sont **propres à chaque arme** (`hero.weapons[clé]`) : ne pas les
-  globaliser sur le héros.
+- Les points **d'arme** (multiplicateur/vitesse) sont **propres à chaque arme**
+  (`hero.weapons[clé]`) : ne pas les globaliser. En revanche, `hero.weaponPoints`
+  (points de niveau gagnés par le héros) est **volontairement partagé** et non lié
+  à une arme tant qu'il n'est pas dépensé.
 - Une arme neuve démarre à **×1.0** et lente : elle n'est pas immédiatement
   supérieure à la mitraillette, elle se construit par les points.
 - Le cooldown de changement (`switchCd`) est distinct du cooldown de tir

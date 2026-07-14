@@ -43,6 +43,7 @@ function createHero() {
     regen: 2, // PV par seconde
     weapon: "smg", // arme équipée
     weapons: createWeapons(), // état de progression de chaque arme
+    weaponPoints: 0, // points de niveau à donner à une arme (gagnés en montant de niveau)
     switchCd: 0, // temps restant avant de pouvoir changer d'arme
   };
 }

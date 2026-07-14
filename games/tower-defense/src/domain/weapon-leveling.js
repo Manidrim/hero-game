@@ -13,7 +13,8 @@ export function grantWeaponXp(state, amount) {
   }
 }
 
-function weaponLevelUp(state, w) {
+// Fait monter une arme d'un niveau : +1 point à répartir et seuil d'XP relevé.
+export function weaponLevelUp(state, w) {
   w.level++;
   w.points++;
   w.xpNext = Math.round(w.xpNext * WEAPON_XP_GROWTH);
