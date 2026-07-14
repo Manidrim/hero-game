@@ -1,0 +1,17 @@
+{
+  "name": "hero-game",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Arcade de petits jeux en HTML/CSS/JavaScript, sans dépendance d'exécution.",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "vitest": "^2.1.8"
+  }
+}

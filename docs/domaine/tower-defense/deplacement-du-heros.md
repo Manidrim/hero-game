@@ -40,6 +40,8 @@ MOVE_KEYS = {
 
 Chaque entrée associe une touche à un vecteur direction `[dx, dy]`.
 
+La gestion clavier vit dans `src/input/keyboard.js` :
+
 - Un `Set` `pressedKeys` mémorise les codes des touches actuellement tenues.
 - `keydown` ajoute le code au `Set` et appelle `preventDefault()` (évite le
   défilement de page avec les flèches).
@@ -49,10 +51,11 @@ Chaque entrée associe une touche à un vecteur direction `[dx, dy]`.
 
 ### Calcul du déplacement
 
-`readMoveVector()` additionne les vecteurs des touches tenues et renvoie
-`{ x, y }`. Cela permet les **déplacements diagonaux** (ex. `KeyW` + `KeyD`).
+`readMoveVector()` (`src/input/keyboard.js`) additionne les vecteurs des touches
+tenues et renvoie `{ x, y }`. Ce vecteur est transmis à chaque frame par la
+boucle principale (`src/main.js`) à la simulation.
 
-Dans `updateHero(dt)` :
+Dans `moveHero(state, dt, moveVector)` (`src/domain/hero-movement.js`) :
 
 1. Si le vecteur est non nul, le héros se déplace dans cette direction à
    `hero.speed` px/s. Le vecteur est **normalisé** (`Math.hypot`) pour que la
@@ -63,11 +66,19 @@ Dans `updateHero(dt)` :
 4. Si aucune touche n'est tenue, on applique le déplacement souris existant
    (avance vers `hero.tx` / `hero.ty`).
 
+Le déplacement à la souris (clic pour fixer `hero.tx` / `hero.ty`) est câblé
+dans `src/input/mouse.js`.
+
 ## Fichiers concernés
 
-- `games/tower-defense/game.js` — `MOVE_KEYS`, `pressedKeys`, `readMoveVector()`,
-  écouteurs `keydown` / `keyup` / `blur`, et la fonction `updateHero()`.
+- `src/input/keyboard.js` — `MOVE_KEYS`, `pressedKeys`, `readMoveVector()`,
+  écouteurs `keydown` / `keyup` / `blur`.
+- `src/input/mouse.js` — clic de déplacement vers une cible.
+- `src/domain/hero-movement.js` — `moveHero(state, dt, moveVector)`.
+- `src/main.js` — boucle principale qui relie l'input à la simulation.
 - `games/tower-defense/index.html` — aide utilisateur décrivant les contrôles.
+
+(Chemins relatifs à `games/tower-defense/`.)
 
 ## Points d'attention
 
