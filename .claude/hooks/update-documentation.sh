@@ -41,9 +41,12 @@ utilise le skill "documentation-projet" (outil Skill) pour créer ou mettre à
 jour la documentation concernée sur le(s) sujet(s) réellement traité(s) :
 - doc "domaine" (technique) dans docs/domaine/,
 - doc "métier" (fonctionnelle) dans docs/metier/,
-- et l'index docs/README.md.
-Si la documentation du sujet n'existe pas encore, crée-la. Ne documente que ce
-qui a changé ; si aucune mise à jour n'est pertinente, tu peux t'arrêter.
+- et l'index docs/README.md (arborescence à jour).
+Respecte l'arborescence par sous-dossiers thématiques et la limite de 500 lignes
+par fichier (découpe si besoin). Si la documentation du sujet n'existe pas
+encore, crée-la. Si un domaine récurrent le justifie, crée aussi un skill dédié
+sous .claude/skills/ pour améliorer la compréhension du projet. Ne documente que
+ce qui a changé ; si aucune mise à jour n'est pertinente, tu peux t'arrêter.
 EOF
 )
 

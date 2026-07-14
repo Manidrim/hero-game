@@ -29,11 +29,29 @@ Un même sujet peut avoir **une page dans chaque famille** (le « quoi » côté
 métier, le « comment » côté domaine). Ne mélange pas les deux dans un seul
 fichier.
 
-## 2. Nommer le fichier
+## 2. Nommer et découper les fichiers
 
 - Un fichier par sujet cohérent, nom en `kebab-case` explicite et en français.
 - Réutilise un fichier existant si le sujet y correspond — vérifie d'abord le
   contenu de `docs/domaine/` et `docs/metier/` avant d'en créer un nouveau.
+- **Aucun fichier de documentation ne doit dépasser 500 lignes.** Si une page
+  s'en approche, **découpe-la** en plusieurs fichiers plus ciblés (par
+  sous-sujet) et relie-les entre eux + depuis l'index. Un fichier long est un
+  signal qu'il couvre plusieurs sujets : sépare-les.
+
+## 2 bis. Arborescence obligatoire
+
+La documentation doit rester **arborescente**, pas plate :
+
+- Organise les pages en **sous-dossiers thématiques** sous `docs/domaine/` et
+  `docs/metier/` dès qu'un thème regroupe plusieurs pages
+  (ex. `docs/domaine/tower-defense/boucle-de-jeu.md`,
+  `docs/domaine/tower-defense/systeme-de-vagues.md`).
+- Chaque sous-dossier contenant plusieurs pages a son propre `README.md`
+  d'index local.
+- L'index racine `docs/README.md` présente **l'arborescence complète**
+  (un arbre de dossiers/fichiers) pour donner une vue d'ensemble immédiate.
+- Maintiens l'arbre à jour à chaque ajout, déplacement ou découpe de fichier.
 
 ## 3. Workflow
 
@@ -98,3 +116,27 @@ Termes métier employés et leur définition.
 - Renvoie vers les fichiers de code par chemin (`games/tower-defense/game.js`).
 - La documentation doit rester **synchronisée avec le code** : si le code
   contredit une page existante, corrige la page.
+- Respecte la limite de **500 lignes par fichier** et l'arborescence (§2, §2 bis).
+
+## 6. Créer des skills dédiés quand c'est utile
+
+Documenter ne suffit pas toujours : quand un domaine du projet a des règles,
+conventions ou procédures récurrentes, **crée aussi un skill dédié** pour que
+l'agent comprenne et applique mieux ce domaine à l'avenir.
+
+Crée un skill (sous `.claude/skills/<nom>/SKILL.md`) dès que tu identifies :
+
+- un **domaine récurrent** avec ses propres conventions (ex. « ajouter un
+  nouveau jeu à l'arcade », « équilibrage des vagues ») ;
+- une **procédure réutilisable** (build, tests, ajout d'un composant type) ;
+- des **règles métier** structurantes qu'un agent devrait suivre à chaque fois.
+
+Règles pour ces skills :
+
+- Frontmatter YAML avec `name` et une `description` riche en déclencheurs
+  (quand l'utiliser), comme ce skill.
+- Contenu actionnable et concis ; renvoie vers les pages de `docs/` plutôt que
+  de dupliquer le contenu.
+- Applique-leur les mêmes contraintes : **≤ 500 lignes**, découpe si besoin en
+  fichiers de référence dans le dossier du skill.
+- Référence les nouveaux skills depuis l'index `docs/README.md`.
