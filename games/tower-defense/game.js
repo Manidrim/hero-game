@@ -534,12 +534,21 @@
   function drawHero() {
     const h = state.hero;
 
-    // Cercle de portée discret
-    ctx.strokeStyle = "rgba(99, 230, 190, 0.25)";
+    // Cercle de portée d'attaque (discret)
+    ctx.strokeStyle = "rgba(255, 224, 102, 0.18)";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(h.x, h.y, h.range, 0, Math.PI * 2);
     ctx.stroke();
+
+    // Zone d'amélioration des tours (les tours à l'intérieur sont améliorables)
+    ctx.strokeStyle = "rgba(99, 230, 190, 0.3)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.arc(h.x, h.y, UPGRADE_RADIUS, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
 
     ctx.fillStyle = "rgba(0,0,0,0.3)";
     ctx.beginPath();
