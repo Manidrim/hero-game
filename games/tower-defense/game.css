@@ -175,6 +175,41 @@ canvas {
 }
 .hero-stats b { color: var(--text); display: block; text-align: center; }
 
+.tower-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--panel-2);
+  margin-bottom: 8px;
+}
+.tr-emoji { font-size: 1.4rem; }
+.tr-info { flex: 1; min-width: 0; }
+.tr-name { font-size: 0.9rem; font-weight: 600; }
+.tr-lvl { color: var(--accent-2); font-weight: 700; }
+.tr-stats { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.tr-up {
+  border: none;
+  border-radius: 9px;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  white-space: nowrap;
+}
+.tr-up:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  cursor: default;
+}
+.tr-up.maxed {
+  background: rgba(46, 204, 113, 0.2);
+  color: var(--good);
+}
+
 button.primary, button.ghost {
   width: 100%;
   padding: 12px;

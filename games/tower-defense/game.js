@@ -57,6 +57,29 @@
     },
   };
 
+  const MAX_TOWER_LEVEL = 10;
+  const UPGRADE_RADIUS = 110;   // distance héros→tour pour pouvoir améliorer
+
+  // Statistiques effectives d'une tour selon son niveau (1 → 10).
+  function getTowerStats(t) {
+    const def = TOWER_TYPES[t.type];
+    const step = t.level - 1;
+    return {
+      range: def.range + 8 * step,
+      damage: def.damage * Math.pow(1.22, step),
+      fireRate: def.fireRate * Math.pow(0.93, step),
+      splash: def.splash > 0 ? def.splash + 4 * step : 0,
+      slow: def.slow > 0 ? Math.min(0.8, def.slow + 0.03 * step) : 0,
+      bullet: def.bullet,
+    };
+  }
+
+  // Coût pour faire passer une tour à son niveau suivant.
+  function upgradeCost(t) {
+    const def = TOWER_TYPES[t.type];
+    return Math.round(def.cost * (0.8 + 0.5 * (t.level - 1)));
+  }
+
   // ---------------------------------------------------------------------------
   // État du jeu
   // ---------------------------------------------------------------------------
@@ -77,6 +100,8 @@
       selectedType: null, // type de tour choisi pour la construction
       hoverCell: null,
       gameOver: false,
+      nextTowerId: 1,
+      panelSig: null,      // signature du panneau d'amélioration (pour éviter les redraws DOM)
       hero: {
         x: WIDTH / 2,
         y: HEIGHT / 2,
@@ -112,6 +137,8 @@
     startWave: document.getElementById("start-wave"),
     reset: document.getElementById("reset"),
     buildHint: document.getElementById("build-hint"),
+    nearbyTowers: document.getElementById("nearby-towers"),
+    nearbyHint: document.getElementById("nearby-hint"),
     overlay: document.getElementById("overlay"),
     overlayTitle: document.getElementById("overlay-title"),
     overlayText: document.getElementById("overlay-text"),
@@ -200,6 +227,7 @@
     updateTowers(dt);
     updateBullets(dt);
     updateFloaters(dt);
+    refreshUpgradePanel();
 
     // Fin de vague
     if (state.waveActive && state.spawnQueue.length === 0 && state.enemies.length === 0) {
@@ -314,11 +342,11 @@
     for (const t of state.towers) {
       t.cooldown -= dt;
       if (t.cooldown > 0) continue;
-      const def = TOWER_TYPES[t.type];
-      const target = nearestEnemy(t.x, t.y, def.range);
+      const s = getTowerStats(t);
+      const target = nearestEnemy(t.x, t.y, s.range);
       if (target) {
-        spawnBullet(t.x, t.y, target.enemy, def.damage, def.bullet, def.splash, def.slow);
-        t.cooldown = def.fireRate;
+        spawnBullet(t.x, t.y, target.enemy, s.damage, s.bullet, s.splash, s.slow);
+        t.cooldown = s.fireRate;
       }
     }
   }
@@ -461,8 +489,22 @@
   }
 
   function drawTowers() {
+    const h = state.hero;
     for (const t of state.towers) {
       const def = TOWER_TYPES[t.type];
+      const near = Math.hypot(t.x - h.x, t.y - h.y) <= UPGRADE_RADIUS;
+
+      // Surbrillance des tours à portée du héros (améliorables).
+      if (near) {
+        ctx.strokeStyle = "rgba(99, 230, 190, 0.7)";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, 19, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
       ctx.fillStyle = "rgba(0,0,0,0.25)";
       ctx.beginPath();
       ctx.arc(t.x, t.y, 16, 0, Math.PI * 2);
@@ -477,6 +519,15 @@
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(def.emoji, t.x, t.y + 1);
+
+      // Pastille de niveau
+      ctx.fillStyle = "#0f1226";
+      ctx.beginPath();
+      ctx.arc(t.x + 11, t.y + 11, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#63e6be";
+      ctx.font = "bold 10px system-ui, sans-serif";
+      ctx.fillText(String(t.level), t.x + 11, t.y + 12);
     }
   }
 
@@ -592,7 +643,9 @@
     const def = TOWER_TYPES[state.selectedType];
     state.gold -= def.cost;
     state.towers.push({
+      id: state.nextTowerId++,
       type: state.selectedType,
+      level: 1,
       c, r,
       x: c * TILE + TILE / 2,
       y: r * TILE + TILE / 2,
@@ -606,6 +659,77 @@
     el.buildButtons.forEach((b) =>
       b.classList.toggle("selected", b.dataset.type === state.selectedType)
     );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Amélioration des tours (uniquement celles proches du héros)
+  // ---------------------------------------------------------------------------
+  function nearbyTowers() {
+    const h = state.hero;
+    return state.towers
+      .map((t) => ({ t, dist: Math.hypot(t.x - h.x, t.y - h.y) }))
+      .filter((o) => o.dist <= UPGRADE_RADIUS)
+      .sort((a, b) => a.dist - b.dist)
+      .map((o) => o.t);
+  }
+
+  function upgradeTower(id) {
+    const t = state.towers.find((x) => x.id === id);
+    if (!t || t.level >= MAX_TOWER_LEVEL) return;
+    const cost = upgradeCost(t);
+    if (state.gold < cost) {
+      addFloater(t.x, t.y, "Pas assez d'or", "#ff6b6b");
+      return;
+    }
+    state.gold -= cost;
+    t.level++;
+    addFloater(t.x, t.y - 20, "Niveau " + t.level, "#63e6be");
+    state.panelSig = null; // force la reconstruction du panneau
+    syncHud();
+  }
+
+  function refreshUpgradePanel() {
+    const list = nearbyTowers();
+
+    // Signature : ne reconstruit le DOM que si quelque chose a changé.
+    const sig = list
+      .map((t) => {
+        const maxed = t.level >= MAX_TOWER_LEVEL;
+        const afford = !maxed && state.gold >= upgradeCost(t);
+        return t.id + ":" + t.level + ":" + (maxed ? "m" : afford ? "1" : "0");
+      })
+      .join("|");
+    if (sig === state.panelSig) return;
+    state.panelSig = sig;
+
+    if (list.length === 0) {
+      el.nearbyTowers.innerHTML = "";
+      el.nearbyHint.style.display = "";
+      return;
+    }
+    el.nearbyHint.style.display = "none";
+
+    el.nearbyTowers.innerHTML = list
+      .map((t) => {
+        const def = TOWER_TYPES[t.type];
+        const s = getTowerStats(t);
+        const maxed = t.level >= MAX_TOWER_LEVEL;
+        const cost = maxed ? 0 : upgradeCost(t);
+        const afford = !maxed && state.gold >= cost;
+        const btn = maxed
+          ? `<button class="tr-up maxed" disabled>Max</button>`
+          : `<button class="tr-up" data-id="${t.id}" ${afford ? "" : "disabled"}>+ ${cost}💰</button>`;
+        return `
+          <div class="tower-row">
+            <span class="tr-emoji">${def.emoji}</span>
+            <div class="tr-info">
+              <div class="tr-name">${def.name} <span class="tr-lvl">Niv. ${t.level}/${MAX_TOWER_LEVEL}</span></div>
+              <div class="tr-stats">Dég. ${Math.round(s.damage)} · Portée ${Math.round(s.range)}</div>
+            </div>
+            ${btn}
+          </div>`;
+      })
+      .join("");
   }
 
   // ---------------------------------------------------------------------------
@@ -666,6 +790,12 @@
     b.addEventListener("click", () => selectType(b.dataset.type))
   );
 
+  el.nearbyTowers.addEventListener("click", (evt) => {
+    const btn = evt.target.closest(".tr-up");
+    if (!btn || btn.disabled || !btn.dataset.id) return;
+    upgradeTower(Number(btn.dataset.id));
+  });
+
   el.startWave.addEventListener("click", startWave);
   el.reset.addEventListener("click", reset);
   el.overlayBtn.addEventListener("click", reset);
@@ -685,6 +815,8 @@
     state = newState();
     el.overlay.classList.add("hidden");
     el.buildButtons.forEach((b) => b.classList.remove("selected"));
+    el.nearbyTowers.innerHTML = "";
+    el.nearbyHint.style.display = "";
     syncHud();
   }
 
