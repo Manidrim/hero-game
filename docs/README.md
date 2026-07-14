@@ -20,8 +20,9 @@ docs/
 │   ├── deploiement/
 │   │   └── github-pages.md                # déploiement du site sur GitHub Pages
 │   └── tower-defense/
+│       ├── architecture-modules.md        # découpage en modules ES (couches, flux de frame)
 │       ├── armes-du-heros.md              # système d'armes du héros (WEAPONS, switchWeapon)
-│       └── deplacement-du-heros.md        # entrées clavier/souris, updateHero
+│       └── deplacement-du-heros.md        # entrées clavier/souris, moveHero
 └── metier/                                # documentation fonctionnelle
     └── tower-defense/
         ├── armes-du-heros.md              # armes du héros (mitraillette/bazooka/sniper)
@@ -32,6 +33,9 @@ docs/
 
 ### Domaine (technique)
 
+- [`tower-defense/architecture-modules.md`](domaine/tower-defense/architecture-modules.md)
+  — organisation du code en modules ES (couches config / domaine / rendu / UI /
+  entrées), flux d'une frame, conventions et tests.
 - [`deploiement/github-pages.md`](domaine/deploiement/github-pages.md)
   — déploiement automatique du site sur GitHub Pages via GitHub Actions
   (URL de test publique reflétant `main`).
