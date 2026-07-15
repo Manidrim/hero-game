@@ -1,8 +1,9 @@
 import { WEAPONS, MULTIPLIER_STEP, FIRE_RATE_STEP, MIN_FIRE_RATE } from "../config/weapons.js";
 
-// Multiplicateur de dégâts d'une arme : x1.0 de base, +0.1 par point investi.
-export function weaponMultiplier(w) {
-  return 1 + MULTIPLIER_STEP * w.multiplierPoints;
+// Multiplicateur de dégâts d'une arme : multiplicateur de base propre à l'arme,
+// +0.1 par point investi.
+export function weaponMultiplier(def, w) {
+  return def.baseMultiplier + MULTIPLIER_STEP * w.multiplierPoints;
 }
 
 // Délai de tir effectif d'une arme, réduit par les points de vitesse.
@@ -15,7 +16,7 @@ export function weaponFireRate(def, w) {
 export function weaponStats(hero) {
   const def = WEAPONS[hero.weapon];
   const w = hero.weapons[hero.weapon];
-  const multiplier = weaponMultiplier(w);
+  const multiplier = weaponMultiplier(def, w);
   return {
     damage: hero.damage * multiplier,
     range: hero.range * def.rangeMul,

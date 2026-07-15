@@ -1,6 +1,6 @@
 # Armes du héros (domaine)
 
-> Dernière mise à jour : 2026-07-14
+> Dernière mise à jour : 2026-07-15
 
 ## Rôle
 
@@ -17,9 +17,9 @@ points de progression, pas via la table :
 
 ```
 WEAPONS = {
-  smg     : { cost: 0,    rangeMul: 1, baseFireRate: 0.7, splash: 0,  … },
-  bazooka : { cost: 1000, rangeMul: 1, baseFireRate: 1.8, splash: 60, … },
-  sniper  : { cost: 5000, rangeMul: 2, baseFireRate: 2.2, splash: 0,  … },
+  smg     : { cost: 0,    rangeMul: 1, baseFireRate: 0.7, splash: 0,  baseMultiplier: 1, … },
+  bazooka : { cost: 1000, rangeMul: 1, baseFireRate: 1.8, splash: 60, baseMultiplier: 3, … },
+  sniper  : { cost: 5000, rangeMul: 2, baseFireRate: 2.2, splash: 0,  baseMultiplier: 6, … },
 }
 ```
 
@@ -28,6 +28,8 @@ WEAPONS = {
 - `baseFireRate` : **délai** entre deux tirs au niveau 1 (les armes sont lentes
   au départ) ; réduit par les points de vitesse.
 - `splash` : rayon des dégâts de zone (0 = cible unique).
+- `baseMultiplier` : multiplicateur de dégâts **par défaut** (avant points
+  investis) ; les armes lourdes frappent plus fort dès l'acquisition.
 - `bullet` / `bulletSpeed` : couleur et vitesse du projectile.
 - Constantes de progression : `WEAPON_XP_BASE`, `WEAPON_XP_GROWTH`,
   `MULTIPLIER_STEP` (0.1), `FIRE_RATE_STEP` (0.9), `MIN_FIRE_RATE`.
@@ -52,7 +54,8 @@ l'arme équipée (`hero.weapon`) et son état de progression
 (`hero.weapons[hero.weapon]`) :
 
 - `damage = hero.damage × multiplicateur`, où
-  `multiplicateur = 1 + 0.1 × multiplierPoints` (`weaponMultiplier`) ;
+  `multiplicateur = baseMultiplier + 0.1 × multiplierPoints` (`weaponMultiplier`)
+  — soit x1 (mitraillette), x3 (bazooka) ou x6 (sniper) au départ ;
 - `fireRate = max(MIN_FIRE_RATE, baseFireRate × 0.9^speedPoints)`
   (`weaponFireRate`) ;
 - `range = hero.range × rangeMul`, plus `splash`, `bullet`, `bulletSpeed`.

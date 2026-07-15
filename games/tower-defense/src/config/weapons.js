@@ -3,20 +3,22 @@
 // (portée, cadence de base, zone, projectile) et progresse ensuite via ses
 // propres niveaux (voir domain/weapon-leveling.js). `baseFireRate` est le délai
 // entre deux tirs au niveau 1 : plus il est grand, plus l'arme est lente.
+// `baseMultiplier` est le multiplicateur de dégâts par défaut, avant les points
+// investis : les armes lourdes frappent plus fort dès l'acquisition.
 export const WEAPONS = {
   smg: {
     name: "Mitraillette", emoji: "🔫", cost: 0,
-    rangeMul: 1, baseFireRate: 0.7, splash: 0,
+    rangeMul: 1, baseFireRate: 0.7, splash: 0, baseMultiplier: 1,
     bullet: "#ffe066", bulletSpeed: 520,
   },
   bazooka: {
     name: "Bazooka", emoji: "🚀", cost: 1000,
-    rangeMul: 1, baseFireRate: 1.8, splash: 60,
+    rangeMul: 1, baseFireRate: 1.8, splash: 60, baseMultiplier: 3,
     bullet: "#ffa94d", bulletSpeed: 340,
   },
   sniper: {
     name: "Sniper", emoji: "🎯", cost: 5000,
-    rangeMul: 2, baseFireRate: 2.2, splash: 0,
+    rangeMul: 2, baseFireRate: 2.2, splash: 0, baseMultiplier: 6,
     bullet: "#74c0fc", bulletSpeed: 1000,
   },
 };
