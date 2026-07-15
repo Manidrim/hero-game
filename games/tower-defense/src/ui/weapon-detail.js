@@ -11,7 +11,7 @@ export function updateWeaponDetail(el, state) {
   el.wdName.textContent = def.emoji + " " + def.name;
   el.wdLevel.textContent = "Niv. " + w.level;
   el.wdXpFill.style.width = Math.min(100, (w.xp / w.xpNext) * 100) + "%";
-  el.wdMult.textContent = "×" + weaponMultiplier(w).toFixed(1);
+  el.wdMult.textContent = "×" + weaponMultiplier(def, w).toFixed(1);
   el.wdRate.textContent = (1 / ws.fireRate).toFixed(1) + "/s";
   el.wdPoints.textContent = w.points;
   el.weaponDetail.classList.toggle("has-points", w.points > 0 || h.weaponPoints > 0);

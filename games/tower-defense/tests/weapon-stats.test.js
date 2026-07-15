@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { weaponStats, weaponMultiplier } from "../src/domain/weapon-stats.js";
 import { createWeapons } from "../src/domain/weapon-state.js";
+import { WEAPONS } from "../src/config/weapons.js";
 
 function heroWith(overrides = {}) {
   return { damage: 14, range: 90, weapon: "smg", weapons: createWeapons(), ...overrides };
@@ -21,8 +22,23 @@ describe("weaponStats", () => {
     const hero = heroWith();
     hero.weapons.smg.multiplierPoints = 5; // x1.5
     const s = weaponStats(hero);
-    expect(weaponMultiplier(hero.weapons.smg)).toBeCloseTo(1.5);
+    expect(weaponMultiplier(WEAPONS.smg, hero.weapons.smg)).toBeCloseTo(1.5);
     expect(s.damage).toBeCloseTo(14 * 1.5);
+  });
+
+  it("le bazooka et le sniper partent d'un multiplicateur de base élevé", () => {
+    const bazooka = weaponStats(heroWith({ weapon: "bazooka" }));
+    expect(bazooka.multiplier).toBeCloseTo(3);
+    expect(bazooka.damage).toBeCloseTo(14 * 3);
+    const sniper = weaponStats(heroWith({ weapon: "sniper" }));
+    expect(sniper.multiplier).toBeCloseTo(6);
+    expect(sniper.damage).toBeCloseTo(14 * 6);
+  });
+
+  it("les points de multiplicateur s'ajoutent au multiplicateur de base de l'arme", () => {
+    const hero = heroWith({ weapon: "bazooka" });
+    hero.weapons.bazooka.multiplierPoints = 5; // +0.5 → x3.5
+    expect(weaponMultiplier(WEAPONS.bazooka, hero.weapons.bazooka)).toBeCloseTo(3.5);
   });
 
   it("les points de vitesse accélèrent le tir (délai plancher respecté)", () => {
