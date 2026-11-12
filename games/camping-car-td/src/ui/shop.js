@@ -15,9 +15,9 @@ export function syncShop(el, state) {
     el._shopSig = sig;
     buildShop(el, state);
   }
-  for (const card of el._shopCards) {
-    card.classList.toggle("poor", !card.locked && state.money < card.def.cost);
-    card.classList.toggle("selected", state.placing === card.def.id);
+  for (const entry of el._shopCards) {
+    entry.card.classList.toggle("poor", !entry.locked && state.money < entry.def.cost);
+    entry.card.classList.toggle("selected", state.placing === entry.def.id);
   }
 }
 
