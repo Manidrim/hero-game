@@ -14,5 +14,5 @@ export const TOWER_TYPES = {
   },
 };
 
-export const MAX_TOWER_LEVEL = 10;
+export const MAX_TOWER_LEVEL = 20;
 export const UPGRADE_RADIUS = 110; // distance héros→tour pour pouvoir améliorer
