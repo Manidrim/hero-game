@@ -1,6 +1,6 @@
 # Contrôles du jeu (métier)
 
-> Dernière mise à jour : 2026-07-14
+> Dernière mise à jour : 2026-11-19
 
 ## Objectif
 
@@ -46,6 +46,7 @@ l'emporte.
 ## Vocabulaire
 
 - **Héros** : l'unité contrôlée par le joueur, qui attaque automatiquement les
-  ennemis à portée et améliore les tours proches.
+  ennemis à portée et améliore les tours proches (jusqu'au niveau 20, en
+  cliquant sur le bouton « + » de chaque tour du panneau « Tours à proximité »).
 - **AZERTY / QWERTY** : dispositions de clavier ; le jeu s'adapte aux deux sans
   configuration.

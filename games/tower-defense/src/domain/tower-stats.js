@@ -1,6 +1,6 @@
 import { TOWER_TYPES } from "../config/towers.js";
 
-// Statistiques effectives d'une tour selon son niveau (1 → 10).
+// Statistiques effectives d'une tour selon son niveau (1 → MAX_TOWER_LEVEL).
 export function getTowerStats(t) {
   const def = TOWER_TYPES[t.type];
   const step = t.level - 1;

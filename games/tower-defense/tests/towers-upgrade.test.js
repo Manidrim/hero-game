@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createState } from "../src/domain/state.js";
 import { selectType, tryBuild } from "../src/domain/towers-build.js";
 import { nearbyTowers, upgradeTower } from "../src/domain/towers-upgrade.js";
+import { MAX_TOWER_LEVEL } from "../src/config/towers.js";
 
 function stateWithTower() {
   const state = createState();
@@ -20,12 +21,21 @@ describe("upgradeTower", () => {
     expect(state.gold).toBe(goldBefore - 40); // upgradeCost niveau 1 = 40
   });
 
-  it("ne dépasse pas le niveau maximum", () => {
+  it("améliore du niveau 19 au niveau 20 (plafond)", () => {
     const state = stateWithTower();
-    state.towers[0].level = 10;
+    state.towers[0].level = MAX_TOWER_LEVEL - 1;
     state.gold = 9999;
     upgradeTower(state, state.towers[0].id);
-    expect(state.towers[0].level).toBe(10);
+    expect(state.towers[0].level).toBe(MAX_TOWER_LEVEL);
+  });
+
+  it("ne dépasse pas le niveau maximum", () => {
+    const state = stateWithTower();
+    state.towers[0].level = MAX_TOWER_LEVEL;
+    state.gold = 9999;
+    upgradeTower(state, state.towers[0].id);
+    expect(state.towers[0].level).toBe(MAX_TOWER_LEVEL);
+    expect(state.gold).toBe(9999); // aucun débit au plafond
   });
 
   it("n'améliore pas sans or suffisant", () => {
